@@ -18,9 +18,11 @@ namespace Baza.Experiment
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(option => 
-                option.ModelBinderProviders.Insert(0, new DateTimeBinderProvider()) 
-            );
+            services.AddMvc(option => { 
+                option.ModelBinderProviders.Insert(0, new DateTimeBinderProvider(services.BuildServiceProvider().GetService<UserCultureInfo>())); 
+            });
+
+            services.AddScoped<UserCultureInfo>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

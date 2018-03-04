@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Baza.Experiment.Models
 {
@@ -9,53 +9,25 @@ namespace Baza.Experiment.Models
     {
         public string Name { get; set; }
 
+        //[JsonConverter(typeof(MyDateTimeConvert))]
         public DateTime Date { get; set; }
     }
 
-    public class DateTimeBinder : IModelBinder
+    public class MyDateTimeConvert: DateTimeConverterBase
     {
-        public Task BindModelAsync(ModelBindingContext bindingContext)
+        public MyDateTimeConvert()
         {
-            if (bindingContext == null)  
-            {  
-                throw new ArgumentNullException(nameof(bindingContext));  
-            }  
-            var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);  
-            if (string.IsNullOrEmpty(valueProviderResult.FirstValue))  
-            {  
-                return null;  
-            }  
-            DateTime datetime;  
-            if (DateTime.TryParse(valueProviderResult.FirstValue, null, DateTimeStyles.AdjustToUniversal, out datetime))  
-            {  
-                bindingContext.Result = ModelBindingResult.Success(TimeZoneInfo.ConvertTime(datetime, TimeZoneInfo.Local).ToUniversalTime());  
-            }  
-            else  
-            {  
-                // TODO: [Enhancement] Could be implemented in better way.  
-                bindingContext.ModelState.TryAddModelError(  
-                    bindingContext.ModelName,  
-                    bindingContext.ModelMetadata  
-                    .ModelBindingMessageProvider.AttemptedValueIsInvalidAccessor(  
-                        valueProviderResult.ToString(), nameof(DateTime)));  
-            }  
-            return Task.CompletedTask;  
         }
-    }
 
-    public class DateTimeBinderProvider : IModelBinderProvider
-    {
-        public IModelBinder GetBinder(ModelBinderProviderContext context)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (context == null)  
-            {  
-                throw new ArgumentNullException(nameof(context));  
-            }  
-            if (context.Metadata.UnderlyingOrModelType == typeof(DateTime))  
-            {  
-                return new DateTimeBinder();  
-            }  
-            return null;
+            string dateText = reader.Value.ToString();
+            return DateTime.Parse(dateText, CultureInfo.CurrentCulture, DateTimeStyles.RoundtripKind);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
         }
     }
 }
