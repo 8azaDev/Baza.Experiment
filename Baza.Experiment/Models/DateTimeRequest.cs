@@ -1,7 +1,8 @@
-﻿using System;
-using System.Globalization;
+﻿using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Globalization;
 
 namespace Baza.Experiment.Models
 {
@@ -13,7 +14,7 @@ namespace Baza.Experiment.Models
         public DateTime Date { get; set; }
     }
 
-    public class MyDateTimeConvert: DateTimeConverterBase
+    public class MyDateTimeConvert : DateTimeConverterBase
     {
         public MyDateTimeConvert()
         {
@@ -29,5 +30,16 @@ namespace Baza.Experiment.Models
         {
             throw new NotImplementedException();
         }
+    }
+
+    public class EsItem
+    {
+        public string Name { get; set; }
+
+        [Date(Format = "yyyy-MM-dd HH:mm:ss.SSS")]
+        public DateTime Date { get; set; }
+
+        [Date]
+        public long Ticks { get; set; }
     }
 }

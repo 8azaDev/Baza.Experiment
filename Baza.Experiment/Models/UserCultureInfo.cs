@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Baza.Experiment.Models
 {
@@ -8,7 +9,7 @@ namespace Baza.Experiment.Models
 
         public UserCultureInfo()
         {
-            TimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/London");
+            TimeZone = TimeZoneInfo.GetSystemTimeZones().First();
         }
 
         public DateTime GetUtcTime(DateTime datetime)
